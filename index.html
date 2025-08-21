@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Rentabilidad y Cash Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .calc-breakdown {
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: #475569; /* slate-600 */
+            padding-top: 0.5rem;
+            line-height: 1.5;
+        }
+        .tax-breakdown {
+             font-size: 0.9rem;
+        }
+        .tax-breakdown span {
+            font-weight: 500;
+        }
+        .bar-chart-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 10rem; /* 160px */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .bar {
+            width: 40%;
+            transition: height 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            text-align: center;
+        }
+        .bar-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #475569; /* slate-600 */
+            margin-top: 0.5rem;
+        }
+        .bar-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Calculadora de Rentabilidad y Cash Flow</h1>
+            <p class="text-slate-600 mt-2">De la facturación al dinero en tu bolsillo.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Columna de Inputs -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 border-b pb-3">1. Parámetros del Servicio</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="total_km" class="block text-sm font-medium text-slate-700 mb-1">Kilómetros Totales (ida y vuelta)</label>
+                        <input type="number" id="total_km" placeholder="Ej: 120" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="horas_trabajadas" class="block text-sm font-medium text-slate-700 mb-1">Horas Trabajadas (Facturables)</label>
+                        <input type="number" id="horas_trabajadas" placeholder="Ej: 2" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="horas_viaje" class="block text-sm font-medium text-slate-700 mb-1">Horas de Viaje</label>
+                        <input type="number" id="horas_viaje" placeholder="Ej: 5" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">2. Costos Operativos</h3>
+                <div class="space-y-4">
+                     <div>
+                        <label for="costo_diario_tecnico" class="block text-sm font-medium text-slate-700 mb-1">Costo Diario del Técnico (Jornada 9hs)</label>
+                        <input type="number" id="costo_diario_tecnico" value="45000" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="costo_real_por_km" class="block text-sm font-medium text-slate-700 mb-1">Costo Real por Km (ARS)</label>
+                        <input type="number" id="costo_real_por_km" value="550" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="peajes" class="block text-sm font-medium text-slate-700 mb-1">Peajes (ARS)</label>
+                        <input type="number" id="peajes" placeholder="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="comidas" class="block text-sm font-medium text-slate-700 mb-1">Comidas (ARS)</label>
+                        <input type="number" id="comidas" placeholder="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                     <div>
+                        <label for="estacionamiento" class="block text-sm font-medium text-slate-700 mb-1">Estacionamiento (ARS)</label>
+                        <input type="number" id="estacionamiento" placeholder="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                </div>
+                
+                <h3 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">3. Impuestos y Riesgo</h3>
+                 <div class="space-y-4">
+                    <div>
+                        <label for="porc_costo_con_iva" class="block text-sm font-medium text-slate-700 mb-1">% de Costos con IVA Crédito</label>
+                        <input type="number" id="porc_costo_con_iva" value="20" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" title="Porcentaje de tus costos (ej. combustible) que generan IVA a favor.">
+                    </div>
+                    <div>
+                        <label for="porc_iibb" class="block text-sm font-medium text-slate-700 mb-1">Alicuota Ingresos Brutos (%)</label>
+                        <input type="number" id="porc_iibb" value="5" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                     <div>
+                        <label for="porc_ganancias" class="block text-sm font-medium text-slate-700 mb-1">Alicuota Ganancias (%)</label>
+                        <input type="number" id="porc_ganancias" value="35" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div class="flex items-center pt-2">
+                        <input id="simular_garantia" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="simular_garantia" class="ml-2 block text-sm font-medium text-slate-700">Simular 1 Viaje por Garantía</label>
+                    </div>
+                </div>
+
+                 <p id="error-message" class="text-red-500 text-sm mt-4 text-center"></p>
+            </div>
+
+            <!-- Columna de Resultados -->
+            <div class="lg:col-span-2 space-y-8">
+                 <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4 text-center">Resultado Final</h2>
+                     <div id="results-container" class="hidden">
+                        <div class="text-center">
+                            <p class="text-slate-600">Flujo Neto Final (En el bolsillo)</p>
+                            <p id="flujo-neto-final" class="text-5xl font-bold my-2"></p>
+                            <div class="flex items-center justify-center space-x-2">
+                               <p class="text-slate-600">Margen Final:</p>
+                               <p id="margen-final" class="text-xl font-semibold"></p>
+                            </div>
+                            <p id="garantia-aviso" class="text-sm text-amber-600 font-semibold mt-2"></p>
+                        </div>
+                    </div>
+                    <div id="placeholder-results" class="text-center py-16">
+                        <p class="text-slate-500">Los resultados aparecerán aquí.</p>
+                    </div>
+                 </div>
+                
+                <div id="breakdown-container" class="hidden fade-in grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 border-b pb-2">Análisis Operativo</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                                <h4 class="font-semibold text-green-800">Total Facturado a Merck</h4>
+                                <p id="total-facturado" class="text-2xl font-bold text-green-700"></p>
+                                <div id="ingreso-calculo-desglose" class="calc-breakdown"></div>
+                            </div>
+                            <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                                <h4 class="font-semibold text-red-800">Costo Operativo Total</h4>
+                                <p id="costo-total" class="text-2xl font-bold text-red-700"></p>
+                                <div id="costo-calculo-desglose" class="calc-breakdown"></div>
+                            </div>
+                             <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                <h4 class="font-semibold text-blue-800">Ganancia Neta (Antes de Impuestos)</h4>
+                                <p id="ganancia-neta" class="text-2xl font-bold text-blue-700"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 border-b pb-2">Análisis de Cash Flow</h3>
+                        <div id="cashflow-desglose" class="space-y-3 text-slate-700 tax-breakdown"></div>
+                    </div>
+                </div>
+                <div id="opportunity-cost-container" class="hidden fade-in md:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">Análisis de Costo de Oportunidad</h3>
+                    <div class="bar-chart-container">
+                        <div id="actual-bar" class="bar bg-blue-500 rounded-t">
+                            <span id="actual-bar-value" class="bar-value"></span>
+                        </div>
+                        <div id="potential-bar" class="bar bg-green-500 rounded-t">
+                            <span id="potential-bar-value" class="bar-value"></span>
+                        </div>
+                    </div>
+                     <div class="flex justify-around mt-1">
+                        <div class="text-center w-1/2"><span class="bar-label">Ganancia Actual</span></div>
+                        <div class="text-center w-1/2"><span class="bar-label">Ganancia Potencial</span></div>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <p class="text-slate-600">Si las horas de viaje se hubieran facturado como trabajo:</p>
+                        <p class="text-2xl font-bold text-red-600" id="lost-profit"></p>
+                        <p class="text-slate-600">de ganancia no realizada.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="text-center mt-12 text-sm text-slate-500">
+            <p>&copy; 2024 - Herramienta de Análisis Financiero Integral</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const allInputs = [
+            document.getElementById('total_km'), document.getElementById('horas_trabajadas'), document.getElementById('horas_viaje'),
+            document.getElementById('costo_diario_tecnico'), document.getElementById('costo_real_por_km'), document.getElementById('porc_iibb'),
+            document.getElementById('porc_ganancias'), document.getElementById('porc_costo_con_iva'),
+            document.getElementById('peajes'), document.getElementById('comidas'), document.getElementById('estacionamiento'),
+            document.getElementById('simular_garantia')
+        ];
+        const [
+            totalKmInput, horasTrabajadasInput, horasViajeInput,
+            costoDiarioTecnicoInput, costoRealPorKmInput, porcIibbInput,
+            porcGananciasInput, porcCostoConIvaInput,
+            peajesInput, comidasInput, estacionamientoInput,
+            simularGarantiaCheckbox
+        ] = allInputs;
+
+        const errorMessage = document.getElementById('error-message');
+        const resultsContainer = document.getElementById('results-container');
+        const placeholderResults = document.getElementById('placeholder-results');
+        const breakdownContainer = document.getElementById('breakdown-container');
+        const opportunityCostContainer = document.getElementById('opportunity-cost-container');
+        
+        const flujoNetoFinalEl = document.getElementById('flujo-neto-final');
+        const margenFinalEl = document.getElementById('margen-final');
+        const garantiaAvisoEl = document.getElementById('garantia-aviso');
+
+        const totalFacturadoEl = document.getElementById('total-facturado');
+        const costoTotalEl = document.getElementById('costo-total');
+        const gananciaNetaEl = document.getElementById('ganancia-neta');
+        
+        const ingresoCalculoDesgloseEl = document.getElementById('ingreso-calculo-desglose');
+        const costoCalculoDesgloseEl = document.getElementById('costo-calculo-desglose');
+        const cashflowDesgloseEl = document.getElementById('cashflow-desglose');
+
+        const actualBar = document.getElementById('actual-bar');
+        const potentialBar = document.getElementById('potential-bar');
+        const actualBarValue = document.getElementById('actual-bar-value');
+        const potentialBarValue = document.getElementById('potential-bar-value');
+        const lostProfitEl = document.getElementById('lost-profit');
+
+        const TARIFA_HORA_MERCK = 134134;
+        const TARIFA_KM_MERCK = 1216;
+        const KM_MINIMOS_SIN_COBRO = 140;
+        const VIATICO_FIJO_ARS = 64000;
+        const PORC_IVA = 0.21;
+        const PORC_IMP_CD = 0.012;
+
+        const formatCurrency = (value, fractionDigits = 2) => value.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits });
+        const formatNumber = (value) => value.toLocaleString('es-AR');
+
+        const calculateScenario = (inputs) => {
+            const ingresoPorHoras = inputs.horasTrabajadas * TARIFA_HORA_MERCK;
+            let ingresoPorKm = 0;
+            let ingresoViaticoFijo = 0;
+
+            if (inputs.totalKm <= KM_MINIMOS_SIN_COBRO && inputs.horasTrabajadas > 0 && inputs.horasTrabajadas < 6) {
+                ingresoViaticoFijo = VIATICO_FIJO_ARS;
+            } else {
+                const kmExcedentes = Math.max(0, inputs.totalKm - KM_MINIMOS_SIN_COBRO);
+                ingresoPorKm = kmExcedentes > 0 ? kmExcedentes * TARIFA_KM_MERCK : 0;
+            }
+            const ingresoTotal = ingresoPorHoras + ingresoPorKm + ingresoViaticoFijo;
+
+            const horasTotalesConsumidas = inputs.horasViaje + inputs.horasTrabajadas;
+            const costoTecnico = horasTotalesConsumidas > 0 ? inputs.costoDiarioTecnico : 0;
+            const costoMovilidad = inputs.totalKm * inputs.costoRealPorKm;
+            const costosVariables = inputs.peajes + inputs.comidas + inputs.estacionamiento;
+            let costoTotal = costoTecnico + costoMovilidad + costosVariables;
+            
+            if (inputs.simularGarantia) {
+                const costoViajeGarantia = costoTecnico + costoMovilidad + costosVariables;
+                costoTotal += costoViajeGarantia;
+            }
+            
+            const gananciaNeta = ingresoTotal - costoTotal;
+
+            const ivaDebito = ingresoTotal * PORC_IVA;
+            const costoConIva = costoTotal * inputs.porcCostoConIva;
+            const ivaCredito = costoConIva * PORC_IVA;
+            const ivaAPagar = ivaDebito - ivaCredito;
+            
+            const iibb = ingresoTotal * inputs.porcIibb;
+            const impCD = (ingresoTotal + costoTotal) * PORC_IMP_CD;
+            
+            const baseImponibleGanancias = Math.max(0, gananciaNeta);
+            const impGanancias = baseImponibleGanancias * inputs.porcGanancias;
+
+            const totalImpuestos = ivaAPagar + iibb + impCD + impGanancias;
+            const flujoNetoFinal = gananciaNeta - totalImpuestos;
+            
+            return {
+                ingresoTotal, costoTotal, gananciaNeta, flujoNetoFinal,
+                ingresoPorHoras, ingresoPorKm, ingresoViaticoFijo,
+                costoTecnico, costoMovilidad, costosVariables,
+                ivaAPagar, iibb, impCD, impGanancias
+            };
+        };
+
+        const performCalculation = () => {
+            const inputs = {
+                totalKm: parseFloat(totalKmInput.value) || 0,
+                horasTrabajadas: parseFloat(horasTrabajadasInput.value) || 0,
+                horasViaje: parseFloat(horasViajeInput.value) || 0,
+                costoDiarioTecnico: parseFloat(costoDiarioTecnicoInput.value) || 0,
+                costoRealPorKm: parseFloat(costoRealPorKmInput.value) || 0,
+                porcIibb: (parseFloat(porcIibbInput.value) || 0) / 100,
+                porcGanancias: (parseFloat(porcGananciasInput.value) || 0) / 100,
+                porcCostoConIva: (parseFloat(porcCostoConIvaInput.value) || 0) / 100,
+                peajes: parseFloat(peajesInput.value) || 0,
+                comidas: parseFloat(comidasInput.value) || 0,
+                estacionamiento: parseFloat(estacionamientoInput.value) || 0,
+                simularGarantia: simularGarantiaCheckbox.checked
+            };
+            
+            if (inputs.horasTrabajadas === 0 && inputs.horasViaje === 0 && inputs.totalKm === 0) {
+                 resultsContainer.classList.add('hidden');
+                 placeholderResults.classList.remove('hidden');
+                 breakdownContainer.classList.add('hidden');
+                 opportunityCostContainer.classList.add('hidden');
+                 return;
+            }
+            errorMessage.textContent = '';
+
+            const actual = calculateScenario(inputs);
+            
+            const idealInputs = {...inputs,
+                horasTrabajadas: inputs.horasTrabajadas + inputs.horasViaje,
+                horasViaje: 0,
+                totalKm: 0,
+                peajes: 0,
+                comidas: 0,
+                estacionamiento: 0,
+                simularGarantia: false // Potential scenario never has warranty
+            };
+            const potential = calculateScenario(idealInputs);
+
+            placeholderResults.classList.add('hidden');
+            [resultsContainer, breakdownContainer, opportunityCostContainer].forEach(el => el.classList.remove('hidden'));
+            resultsContainer.classList.add('fade-in');
+
+            flujoNetoFinalEl.textContent = formatCurrency(actual.flujoNetoFinal);
+            const margenFinal = actual.ingresoTotal > 0 ? (actual.flujoNetoFinal / actual.ingresoTotal) * 100 : 0;
+            margenFinalEl.textContent = `${margenFinal.toFixed(2)}%`;
+            flujoNetoFinalEl.className = 'text-5xl font-bold my-2 ' + (actual.flujoNetoFinal < 0 ? 'text-red-600' : 'text-green-600');
+            margenFinalEl.className = 'text-xl font-semibold ' + (actual.flujoNetoFinal < 0 ? 'text-red-600' : 'text-green-600');
+            garantiaAvisoEl.textContent = inputs.simularGarantia ? '(*Cálculo incluye costos de 1 viaje por garantía)' : '';
+
+            totalFacturadoEl.textContent = formatCurrency(actual.ingresoTotal);
+            costoTotalEl.textContent = formatCurrency(actual.costoTotal);
+            gananciaNetaEl.textContent = formatCurrency(actual.gananciaNeta);
+            
+            let ingresoCalculoHtml = `<div>Horas: ${formatNumber(inputs.horasTrabajadas)}hs × ${formatCurrency(TARIFA_HORA_MERCK, 0)} = ${formatCurrency(actual.ingresoPorHoras)}</div>`;
+            if(actual.ingresoViaticoFijo > 0) ingresoCalculoHtml += `<div>Viático Fijo: ${formatCurrency(actual.ingresoViaticoFijo)}</div>`;
+            if(actual.ingresoPorKm > 0) ingresoCalculoHtml += `<div>Km Excedente: (${formatNumber(inputs.totalKm)} - ${KM_MINIMOS_SIN_COBRO})km = ${formatCurrency(actual.ingresoPorKm)}</div>`;
+            ingresoCalculoDesgloseEl.innerHTML = ingresoCalculoHtml;
+
+            let costoCalculoHtml = `<div>Técnico: ${formatCurrency(actual.costoTecnico)}</div>`;
+            costoCalculoHtml += `<div>Movilidad: ${formatCurrency(actual.costoMovilidad)}</div>`;
+            if (actual.costosVariables > 0) costoCalculoHtml += `<div>Variables: ${formatCurrency(actual.costosVariables)}</div>`;
+            if (inputs.simularGarantia) costoCalculoHtml += `<div class="text-amber-600">Garantía: +${formatCurrency(actual.costoTecnico + actual.costoMovilidad + actual.costosVariables)}</div>`;
+            costoCalculoDesgloseEl.innerHTML = costoCalculoHtml;
+
+            cashflowDesgloseEl.innerHTML = `
+                <div class="flex justify-between"><span>Ganancia Neta (Base)</span> <span>${formatCurrency(actual.gananciaNeta)}</span></div><hr>
+                <div class="flex justify-between text-red-700"><span>(-) IVA a Pagar</span> <span>${formatCurrency(actual.ivaAPagar)}</span></div>
+                <div class="flex justify-between text-red-700"><span>(-) Ingresos Brutos</span> <span>${formatCurrency(actual.iibb)}</span></div>
+                <div class="flex justify-between text-red-700"><span>(-) Imp. Créditos/Débitos</span> <span>${formatCurrency(actual.impCD)}</span></div>
+                <div class="flex justify-between text-red-700"><span>(-) Imp. a las Ganancias</span> <span>${formatCurrency(actual.impGanancias)}</span></div><hr>
+                <div class="flex justify-between font-bold"><span>Flujo Neto Final</span> <span>${formatCurrency(actual.flujoNetoFinal)}</span></div>`;
+
+            const lostProfit = potential.flujoNetoFinal - actual.flujoNetoFinal;
+            lostProfitEl.textContent = formatCurrency(lostProfit > 0 ? lostProfit : 0);
+            
+            actualBarValue.textContent = formatCurrency(actual.flujoNetoFinal, 0);
+            potentialBarValue.textContent = formatCurrency(potential.flujoNetoFinal, 0);
+
+            const maxBarValue = Math.max(1, potential.flujoNetoFinal);
+            let actualBarHeight = (actual.flujoNetoFinal / maxBarValue) * 100;
+            actualBarHeight = Math.max(2, Math.min(100, actualBarHeight));
+
+            actualBar.style.height = `${actualBarHeight}%`;
+            potentialBar.style.height = '100%';
+        };
+
+        allInputs.forEach(input => input.addEventListener('input', performCalculation));
+        
+        document.addEventListener('DOMContentLoaded', performCalculation);
+    </script>
+</body>
+</html>
